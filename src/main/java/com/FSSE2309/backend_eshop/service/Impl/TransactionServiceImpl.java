@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -68,18 +69,23 @@ public class TransactionServiceImpl implements TransactionService {
             transactionRepository.save(newTransaction);
 
             //save transaction product
-            List<TransactionProductEntity> list = new ArrayList<>();
-            TransactionProductEntity buyProduct;
+//            List<TransactionProductEntity> list = new ArrayList<>();
+//            TransactionProductEntity buyProduct;
+//
+//            for (CartEntity item:
+//                 checkOutCart) {
+//                buyProduct = new TransactionProductEntity(item, newTransaction);
+//                list.add(buyProduct);
+//                transactionProductRepository.save(buyProduct);
+//            }
 
-            for (CartEntity item:
-                 checkOutCart) {
-                buyProduct = new TransactionProductEntity(item, newTransaction);
-                list.add(buyProduct);
-                transactionProductRepository.save(buyProduct);
-            }
+            List<TransactionProductEntity> list = checkOutCart.stream()
+                    .map(item -> transactionProductRepository.save(new TransactionProductEntity(item, newTransaction)))
+                    .collect(Collectors.toList());
 
             //clear cart
-            cartService.clearUserCart(checkOutCart);
+//            cartService.clearUserCart(checkOutCart);
+            cartService.clearUserCartByUid(user.getUid());
 
             return new TransactionDetailData(newTransaction, list);
 
@@ -137,6 +143,7 @@ public class TransactionServiceImpl implements TransactionService {
                     productService.saveNewStock(product);
 
                 }
+
 
                 //change status
                 desiredTransaction.setStatus(TransactionStatus.PROCESSING);

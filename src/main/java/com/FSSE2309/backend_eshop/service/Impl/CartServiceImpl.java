@@ -18,9 +18,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -50,22 +50,18 @@ public class CartServiceImpl implements CartService {
                 throw new InvalidNumberValueException();
             }
 
+
             UserEntity user = userService.getByFirebase(data);
 
             //check pid exist in product & enough stock
             ProductEntity product = productService.checkInputProduct(pidInt, quantityInt);
 
-            //deduct stock
-//            product.setStock(product.getStock() - quantityInt);
-//            productService.saveNewStock(product);
-
             //check uid & pid exist in cart
-            Optional<CartEntity> result = cartRepository.findByProductAndUser(product, user);
+//            Optional<CartEntity> result = cartRepository.findByProductAndUser(product, user);
+            Optional<CartEntity> result = cartRepository.findByProductIdAndUserId(product.getPid(), user.getUid());
 
             //add to cart
-            CartEntity newCartItem = addToCart(result, product, user, quantityInt);
-
-            cartRepository.save(newCartItem);
+            CartEntity newCartItem = alterCart(result, product, user, quantityInt);
 
             return CartActionStatus.SUCCESS;
 
@@ -85,14 +81,18 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public List<CartItemData> getCartList(FirebaseUserData userData){
-        List<CartItemData> list = new ArrayList<>();
+        //List<CartItemData> list = new ArrayList<>();
 
         UserEntity user = userService.getByFirebase(userData);
 
-        for (CartEntity cartItem:
-                getCartEntityList(user)) {
-            list.add(new CartItemData(cartItem));
-        }
+//        for (CartEntity cartItem:
+//                getCartEntityList(user)) {
+//            list.add(new CartItemData(cartItem));
+//        }
+
+        List<CartItemData> list = getCartEntityList(user).stream()
+                .map(CartItemData::new)
+                .collect(Collectors.toList());
 
         return list;
     }
@@ -113,16 +113,17 @@ public class CartServiceImpl implements CartService {
             ProductEntity product = productService.checkInputProduct(pidInt, quantityInt);
 
             //check uid & pid exist in cart
-            CartEntity result = cartRepository.findByProductAndUser(product, user).orElseThrow(ProductNotExistedException::new);
+//            CartEntity result = cartRepository.findByProductAndUser(product, user).orElseThrow(ProductNotExistedException::new);
+            CartEntity result = cartRepository.findByProductIdAndUserId(
+                                    product.getPid(),
+                                    user.getUid()
+                                ).orElseThrow(ProductNotExistedException::new);
 
             //update cart quantity
             result.setQuantity(quantityInt);
 
-            result = cartRepository.save(result);
-
-            //deduct stock
-//            product.setStock(product.getStock() - quantityInt);
-//            productService.saveNewStock(product);
+//            result = cartRepository.save(result);
+            updateItem(result);
 
             return new CartItemData(result);
 
@@ -149,13 +150,19 @@ public class CartServiceImpl implements CartService {
 
             //check uid & pid exist in cart
             ProductEntity product = productService.checkProduct(pidInt);
-            Optional<CartEntity> result = cartRepository.findByProductAndUser(product, user);
+
+//            Optional<CartEntity> result = cartRepository.findByProductAndUser(product, user);
+            Optional<CartEntity> result = cartRepository.findByProductIdAndUserId(
+                                            product.getPid(),
+                                            user.getUid()
+                                         );
 
             if(result.isEmpty()){
                 throw new ProductNotExistedException();
 
             }else {
-                cartRepository.delete(result.get());
+//                cartRepository.delete(result.get());
+                cartRepository.deleteItem(result.get().getCid());
 
                 //refill stock
 //                product.setStock(product.getStock() + result.get().getQuantity());
@@ -189,34 +196,57 @@ public class CartServiceImpl implements CartService {
 //                .orElseThrow(ProductNotExistedException::new);
 //    }
 
-    private CartEntity addToCart(Optional<CartEntity> result, ProductEntity product, UserEntity user, int quantityInt){
+    private CartEntity alterCart(Optional<CartEntity> result, ProductEntity product, UserEntity user, int quantityInt){
 
         CartEntity newCartItem;
 
         if(result.isEmpty()){
-            newCartItem = new CartEntity(product, user, 0);
+            newCartItem = new CartEntity(product, user, quantityInt);
+            addItem(newCartItem);
 
         } else{
             newCartItem = result.get();
+            int updatedQuantity = newCartItem.getQuantity() + quantityInt;
+
+            if(updatedQuantity < 0){
+                throw new InvalidNumberValueException();
+            }
+            newCartItem.setQuantity(updatedQuantity);
+            updateItem(newCartItem);
         }
-
-        int updatedQuantity = newCartItem.getQuantity() + quantityInt;
-
-        if(updatedQuantity < 0){
-            throw new InvalidNumberValueException();
-        }
-
-        newCartItem.setQuantity(updatedQuantity);
 
         return newCartItem;
     }
 
+    private void addItem(CartEntity newCartItem){
+        cartRepository.saveToCart(
+                newCartItem.getProduct().getPid(),
+                newCartItem.getQuantity(),
+                newCartItem.getUser().getUid()
+        );
+    }
+
+    private void updateItem(CartEntity newCartItem){
+        cartRepository.updateQuantity(
+                newCartItem.getProduct().getPid(),
+                newCartItem.getQuantity()
+        );
+    }
+
     @Override
     public List<CartEntity> getCartEntityList(UserEntity user){
-        return cartRepository.findAllByUser(user);
+//        return cartRepository.findAllByUser(user);
+        return cartRepository.findAllByUserId(user.getUid());
     }
     @Override
     public void clearUserCart(List<CartEntity> checkOutCart){
         cartRepository.deleteAll(checkOutCart);
     }
+
+    @Override
+    public void clearUserCartByUid(int uid){
+        cartRepository.deleteAllByUid(uid);
+    }
+
+
 }

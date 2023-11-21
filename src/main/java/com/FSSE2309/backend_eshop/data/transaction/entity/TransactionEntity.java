@@ -24,6 +24,7 @@ public class TransactionEntity {
     @Column(nullable = false)
     private LocalDateTime dateTime;
 
+    //@Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TransactionStatus status;
 

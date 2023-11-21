@@ -21,4 +21,6 @@ public interface CartService {
     List<CartEntity> getCartEntityList(UserEntity user);
 
     void clearUserCart(List<CartEntity> checkOutCart);
+
+    void clearUserCartByUid(int uid);
 }

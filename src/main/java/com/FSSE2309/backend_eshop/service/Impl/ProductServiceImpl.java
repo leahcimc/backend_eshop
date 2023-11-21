@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -30,12 +32,16 @@ public class ProductServiceImpl implements ProductService {
     //Method from API
     @Override
     public List<ProductDetailData> getProductList(){
-        List<ProductDetailData> list = new ArrayList<>();
+//        List<ProductDetailData> list = new ArrayList<>();
+//
+//        for (ProductEntity entity:
+//                productRepository.findAll()) {
+//            list.add(new ProductDetailData(entity));
+//        }
 
-        for (ProductEntity entity:
-                productRepository.findAll()) {
-            list.add(new ProductDetailData(entity));
-        }
+        List<ProductDetailData> list = StreamSupport.stream(productRepository.findAll().spliterator(), false)
+                .map(ProductDetailData::new)
+                .collect(Collectors.toList());
 
         return list;
     }
