@@ -2,6 +2,7 @@ package com.FSSE2309.backend_eshop.service.Impl;
 
 import com.FSSE2309.backend_eshop.data.cart.entity.CartEntity;
 import com.FSSE2309.backend_eshop.data.product.entity.ProductEntity;
+import com.FSSE2309.backend_eshop.data.transaction.domainObj.TransactionBillData;
 import com.FSSE2309.backend_eshop.data.transaction.domainObj.TransactionDetailData;
 import com.FSSE2309.backend_eshop.data.transaction.domainObj.TransactionActionStatus;
 import com.FSSE2309.backend_eshop.data.transaction.entity.TransactionEntity;
@@ -26,7 +27,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -116,6 +116,23 @@ public class TransactionServiceImpl implements TransactionService {
         }catch(TransactionNotExistException e){
             logger.warn("Transaction " + tid + " is not existed.");
             throw e;
+        }
+    }
+    @Override
+    public List<TransactionBillData> getAllTransaction(FirebaseUserData data){
+        try {
+            //get user
+            UserEntity user = userService.getByFirebase(data);
+
+            //find All Transaction by user
+            List<TransactionEntity> resultList = findAllTransaction(user.getUid());
+
+            return resultList.stream().map(TransactionBillData::new).collect(Collectors.toList());
+
+        }catch(NumberFormatException e){
+            logger.warn("Input ID is not valid.");
+            throw new InvalidInputIdException();
+
         }
     }
 
@@ -272,4 +289,9 @@ public class TransactionServiceImpl implements TransactionService {
     private List<TransactionProductEntity> findCorrespondingItem(int tidInt){
         return transactionProductRepository.findAllByTransaction_Tid(tidInt);
     }
+
+    private List<TransactionEntity> findAllTransaction(int uid){
+        return transactionRepository.findAllByUser_Uid(uid);
+    }
 }
+

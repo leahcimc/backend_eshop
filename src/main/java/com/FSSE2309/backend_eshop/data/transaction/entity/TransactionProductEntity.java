@@ -24,7 +24,7 @@ public class TransactionProductEntity {
     private String name;
     @Column
     private String description;
-    @Column(name = "image_url")
+    @Column(name = "image_url", length = 400)
     private String imageUrl;
     @Column(nullable = false)
     private BigDecimal price;

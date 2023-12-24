@@ -1,5 +1,6 @@
 package com.FSSE2309.backend_eshop.api;
 
+import com.FSSE2309.backend_eshop.data.transaction.dto.TransactionBillDto;
 import com.FSSE2309.backend_eshop.data.transaction.dto.TransactionDetailResponseDto;
 import com.FSSE2309.backend_eshop.data.transaction.dto.TransactionStatusDto;
 import com.FSSE2309.backend_eshop.data.transaction.entity.TransactionStatus;
@@ -9,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+@CrossOrigin("http://localhost:5173")
 @RestController
 @RequestMapping("/transaction")
 public class TransactionAPI {
@@ -32,6 +37,15 @@ public class TransactionAPI {
     public TransactionDetailResponseDto getTransaction(@PathVariable Object tid, JwtAuthenticationToken token){
         return new TransactionDetailResponseDto(
                 transactionService.getTransaction(tid, JwtUtil.getFirebaseUser(token))
+        );
+    }
+    @GetMapping()
+    public List<TransactionBillDto> getAllTransaction(JwtAuthenticationToken token){
+        return (
+                transactionService.getAllTransaction(JwtUtil.getFirebaseUser(token)))
+                .stream()
+                .map(TransactionBillDto::new)
+                .collect(Collectors.toList()
         );
     }
 
