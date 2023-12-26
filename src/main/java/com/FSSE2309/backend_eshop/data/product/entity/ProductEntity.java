@@ -2,11 +2,12 @@ package com.FSSE2309.backend_eshop.data.product.entity;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "product")
-public class ProductEntity {
+public class ProductEntity implements Serializable {
     //Attribute
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

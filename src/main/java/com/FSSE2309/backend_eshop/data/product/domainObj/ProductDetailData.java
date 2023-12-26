@@ -3,9 +3,10 @@ package com.FSSE2309.backend_eshop.data.product.domainObj;
 
 import com.FSSE2309.backend_eshop.data.product.entity.ProductEntity;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class ProductDetailData {
+public class ProductDetailData implements Serializable {
     //Attribute
 
     private int pid;
