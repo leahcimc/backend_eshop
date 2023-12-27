@@ -1,5 +1,6 @@
 package com.FSSE2309.backend_eshop.api;
 
+import com.FSSE2309.backend_eshop.config.EnvConfig;
 import com.FSSE2309.backend_eshop.data.cart.domainObj.CartItemData;
 import com.FSSE2309.backend_eshop.data.cart.dto.CartActionResponseDto;
 import com.FSSE2309.backend_eshop.data.cart.dto.CartItemResponseDto;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin("http://localhost:5173")
+@CrossOrigin({EnvConfig.devEnvBaseUrl, EnvConfig.prodEnvBaseUrl})
 @RestController
 @RequestMapping("/cart")
 public class CartAPI {

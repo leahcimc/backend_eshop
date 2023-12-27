@@ -1,5 +1,6 @@
 package com.FSSE2309.backend_eshop.api;
 
+import com.FSSE2309.backend_eshop.config.EnvConfig;
 import com.FSSE2309.backend_eshop.data.transaction.dto.TransactionBillDto;
 import com.FSSE2309.backend_eshop.data.transaction.dto.TransactionDetailResponseDto;
 import com.FSSE2309.backend_eshop.data.transaction.dto.TransactionStatusDto;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@CrossOrigin("http://localhost:5173")
+@CrossOrigin({EnvConfig.devEnvBaseUrl, EnvConfig.prodEnvBaseUrl})
 @RestController
 @RequestMapping("/transaction")
 public class TransactionAPI {

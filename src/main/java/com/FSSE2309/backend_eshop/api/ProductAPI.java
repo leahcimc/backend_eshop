@@ -1,6 +1,7 @@
 package com.FSSE2309.backend_eshop.api;
 
 
+import com.FSSE2309.backend_eshop.config.EnvConfig;
 import com.FSSE2309.backend_eshop.data.product.domainObj.ProductDetailData;
 import com.FSSE2309.backend_eshop.data.product.dto.ProductListResponseDto;
 import com.FSSE2309.backend_eshop.data.product.dto.SingleProductResponseDto;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin("http://localhost:5173")
+@CrossOrigin({EnvConfig.devEnvBaseUrl, EnvConfig.prodEnvBaseUrl})
 @RestController
 @RequestMapping("/public/product")
 public class ProductAPI {
