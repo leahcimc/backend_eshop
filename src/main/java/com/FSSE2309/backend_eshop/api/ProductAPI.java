@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+//@CrossOrigin("http://fsse2309-project-leahcim.s3-website-ap-southeast-1.amazonaws.com")
 @CrossOrigin({EnvConfig.devEnvBaseUrl, EnvConfig.prodEnvBaseUrl})
 @RestController
 @RequestMapping("/public/product")
