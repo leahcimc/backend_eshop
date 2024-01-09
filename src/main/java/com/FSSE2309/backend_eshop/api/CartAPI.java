@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 //@CrossOrigin("http://fsse2309-project-leahcim.s3-website-ap-southeast-1.amazonaws.com")
 @CrossOrigin({EnvConfig.devEnvBaseUrl, EnvConfig.prodEnvBaseUrl, EnvConfig.prodEnvBaseUrl1, EnvConfig.prodEnvBaseUrl2, EnvConfig.prodEnvBaseUrl3})
@@ -51,6 +52,10 @@ public class CartAPI {
              cartService.getCartList(userData)) {
             list.add(new CartItemResponseDto(data));
         }
+
+//        cartService.getCartList(userData).stream().map(
+//                (data) -> list.add(new CartItemResponseDto(data))
+//        );
 
         return list;
     }
