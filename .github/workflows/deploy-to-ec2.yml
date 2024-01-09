@@ -37,7 +37,7 @@ jobs:
  
          - # Build Docker image
              name: Build Docker image
-             run: docker build -t project_backend .
+             run: docker build -t project-backend .
  
          - # Tag Docker image
              name: Tag Docker image
