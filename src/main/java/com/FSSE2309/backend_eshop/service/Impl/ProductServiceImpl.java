@@ -32,7 +32,7 @@ public class ProductServiceImpl implements ProductService {
 
     //Method from API
     @Override
-    @Cacheable(cacheNames = "cache1", key = "'#key'")
+//    @Cacheable(cacheNames = "cache1", key = "'#key'")
     public List<ProductDetailData> getProductList(){
 //        List<ProductDetailData> list = new ArrayList<>();
 //

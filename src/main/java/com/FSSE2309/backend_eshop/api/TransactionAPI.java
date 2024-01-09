@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 //@CrossOrigin("http://fsse2309-project-leahcim.s3-website-ap-southeast-1.amazonaws.com")
-@CrossOrigin({EnvConfig.devEnvBaseUrl, EnvConfig.prodEnvBaseUrl})
+@CrossOrigin({EnvConfig.devEnvBaseUrl, EnvConfig.prodEnvBaseUrl, EnvConfig.prodEnvBaseUrl1, EnvConfig.prodEnvBaseUrl2, EnvConfig.prodEnvBaseUrl3})
 @RestController
 @RequestMapping("/transaction")
 public class TransactionAPI {
